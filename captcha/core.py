@@ -40,9 +40,7 @@ class Captcha:
                 if new_x < area_width and new_y < area_high:
                     tmp_area[new_y, new_x, :] = area[index_y, index_x, :]
 
-        for index_y in range(area_high):
-            for index_x in range(area_width):
-                area[index_y, index_x, :] = tmp_area[index_y, index_x, :]
+        area[:, :, :] = tmp_area[:, :, :]
 
     def _distort_img(self, img):
         # TODO
