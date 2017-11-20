@@ -155,11 +155,13 @@ class Captcha:
             if word not in exits:
                 exits.add(word)
                 self.save_img(word)
-                if not self.debug and len(exits) % 10 == 0:
-                    print('{} generated.'.format(len(exits)))
-                print('{} saved.'.format(len(exits)))
+                if not self.debug:
+                    if len(exits) % 10 == 0:
+                        print('{} generated.'.format(len(exits)))
+        if not self.debug:
+            print('{} saved.'.format(len(exits)))
 
 
 if __name__ == '__main__':
-    c = Captcha(150, 40, debug=False)
+    c = Captcha(150, 40, debug=True)
     c.batch_create_img(5)
