@@ -156,7 +156,7 @@ class Captcha:
                 exits.add(word)
                 self.save_img(word)
                 if not self.debug and len(exits) % 10 == 0:
-                    print('{} saved.'.format(len(exits)))
+                    print('{} generated.'.format(len(exits)))
                 print('{} saved.'.format(len(exits)))
 
 
