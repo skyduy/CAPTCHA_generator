@@ -8,7 +8,7 @@ from captcha import constant
 
 class Captcha:
     def __init__(self, width, high, letter=None,
-                 folder='captcha', debug=False):
+                 folder='../samples', debug=False):
         if letter is None:
             letter = string.ascii_uppercase + string.digits
         stop_letter = {'I', 'O', 'Q'}
@@ -56,8 +56,26 @@ class Captcha:
         area[:, :, :] = tmp_area[:, :, :]
 
     def _distort_img(self, img):
-        # TODO
-        pass
+        high, width, _ = img.shape
+        tmp_img = img.copy()
+        tmp_img.fill(255)
+
+        coef_vertical = np.random.randint(3, 8)
+        coef_horizontal = np.random.choice([4, 5, 6]) * math.pi / width
+        scale_biase = np.random.randint(0, 360) * math.pi / 180
+
+        def new_coordinate(x, y):
+            return int(x+coef_vertical*math.sin(coef_horizontal*y+scale_biase))
+
+        for y in range(width):
+            for x in range(high):
+                new_x = new_coordinate(x, y)
+                try:
+                    tmp_img[x, y, :] = img[new_x, y, :]
+                except IndexError:
+                    pass
+
+        img[:, :, :] = tmp_img[:, :, :]
 
     def _draw_basic(self, img, text):
         font_face = getattr(cv2,  np.random.choice(constant.FONTS))
@@ -109,7 +127,7 @@ class Captcha:
         cv2.line(img, start, end, line_color, line_thickness)
 
     def _put_noise(self, img):
-        for i in range(800):
+        for i in range(600):
             x = np.random.randint(self.width)
             y = np.random.randint(self.high)
             dot_color = tuple(int(np.random.choice(range(0, 156)))
@@ -120,9 +138,9 @@ class Captcha:
         img = np.zeros((self.high, self.width, 3), np.uint8)
         img.fill(255)
         self._draw_basic(img, text)
-        self._draw_line(img)
         self._put_noise(img)
         self._distort_img(img)
+        self._draw_line(img)
 
         if self.debug:
             cv2.imshow("img", img)
@@ -132,13 +150,16 @@ class Captcha:
 
     def batch_create_img(self, number=5):
         exits = set()
-        while(len(exits)) <= number:
+        while(len(exits)) < number:
             word = ''.join(np.random.choice(self.letter, constant.LETTER_NUM))
             if word not in exits:
                 exits.add(word)
                 self.save_img(word)
+                if not self.debug and len(exits) % 10 == 0:
+                    print('{} saved.'.format(len(exits)))
+                print('{} saved.'.format(len(exits)))
 
 
 if __name__ == '__main__':
-    c = Captcha(150, 40, debug=True)
-    c.batch_create_img(10)
+    c = Captcha(150, 40, debug=False)
+    c.batch_create_img(5)
