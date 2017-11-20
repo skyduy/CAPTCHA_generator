@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 import string
+import math
 import os
 from captcha import constant
 
@@ -19,9 +20,21 @@ class Captcha:
             if not os.path.exists(self.folder):
                 os.makedirs(self.folder)
 
-    def _tilt_img(self, img, top_left, bottom_right):
-        # TODO
-        pass
+    def _tilt_img(self, img):
+        tmp_img = img.copy()
+        tmp_img.fill(255)
+        tile_angle = np.random.randint(
+            int(100*-math.pi/6), int(100*math.pi/6)
+        ) / 100
+        high, width, _ = img.shape
+        for y in range(width):
+            for x in range(high):
+                new_y = int(y + (x-high/2)*math.tanh(tile_angle))
+                try:
+                    tmp_img[x, new_y, :] = img[x, y, :]
+                except IndexError:
+                    pass
+        img[:, :, :] = tmp_img[:, :, :]
 
     def _shake_img(self, img, outer_top_left, outer_bottom_right,
                    inner_top_left, inner_bottom_right):
@@ -48,25 +61,41 @@ class Captcha:
 
     def _draw_basic(self, img, text):
         font_face = getattr(cv2,  np.random.choice(constant.FONTS))
-        font_color = tuple(int(np.random.choice(range(0, 156)))
-                           for _ in range(3))
         font_scale = 1
         font_thickness = 2
-        (width, high), _ = cv2.getTextSize(
-            text, font_face, font_scale, font_thickness)
-        bottom_left_coordinate = (
-            (self.width-width)//2,
-            self.high - (self.high-high)//2
-        )
-        cv2.putText(img, text, bottom_left_coordinate, font_face, font_scale,
-                    font_color, font_thickness)
 
-        # TODO shake and tilt
-        top_left = ((self.width-width)//2, (self.high-high)//2)
-        bottom_right = ((self.width-width)//2 + width,
-                        self.high - (self.high-high)//2)
-        self._shake_img(img, (0, 0), (self.width, self.high),
-                        top_left, bottom_right)
+        (total_width, _), _ = cv2.getTextSize(
+            text, font_face, font_scale, font_thickness)
+        width_delta = np.random.randint(5, self.width - total_width - 15)
+        imgs = list()
+        for index, letter in enumerate(text):
+            tmp_img = img.copy()
+            (width, high), _ = cv2.getTextSize(
+                letter, font_face, font_scale, font_thickness)
+            vertical_range = self.high - high
+            delta_high = np.random.randint(
+                int(2*vertical_range/5), int(3*vertical_range/5)
+            )
+            bottom_left_coordinate = (
+                index*width + width_delta,
+                self.high - delta_high
+            )
+            font_color = tuple(int(np.random.choice(range(0, 156)))
+                               for _ in range(3))
+            cv2.putText(tmp_img, letter, bottom_left_coordinate, font_face,
+                        font_scale, font_color, font_thickness)
+            self._tilt_img(tmp_img)
+            imgs.append(tmp_img)
+        high, width, _ = img.shape
+        for y in range(width):
+            for x in range(high):
+                r, g, b = 0, 0, 0
+                for tmp_img in imgs:
+                    r += tmp_img[x, y, 0]
+                    g += tmp_img[x, y, 1]
+                    b += tmp_img[x, y, 2]
+                r, g, b = r % 256, g % 256, b % 256
+                img[x, y, :] = (r, g, b)
 
     def _draw_line(self, img):
         left_x = np.random.randint(0, self.width//4)
@@ -104,7 +133,7 @@ class Captcha:
     def batch_create_img(self, number=5):
         exits = set()
         while(len(exits)) <= number:
-            word = ''.join(np.random.choice(self.letter, 5))
+            word = ''.join(np.random.choice(self.letter, constant.LETTER_NUM))
             if word not in exits:
                 exits.add(word)
                 self.save_img(word)
