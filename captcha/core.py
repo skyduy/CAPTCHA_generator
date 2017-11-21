@@ -145,7 +145,7 @@ class Captcha:
         if self.debug:
             cv2.imshow("img", img)
             cv2.waitKey(0)
-        if not self.debug:
+        else:
             cv2.imwrite('{}/{}.jpg'.format(self.folder, text), img)
 
     def batch_create_img(self, number=5):
