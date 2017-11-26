@@ -81,21 +81,23 @@ class Captcha:
         font_face = getattr(cv2,  np.random.choice(constant.FONTS))
         font_scale = 1
         font_thickness = 2
+        max_width = max_high = 0
+        for i in text:
+            (width, high), _ = cv2.getTextSize(
+                i, font_face, font_scale, font_thickness)
+            max_width, max_high = max(max_width, width), max(max_high, high)
 
-        (total_width, _), _ = cv2.getTextSize(
-            text, font_face, font_scale, font_thickness)
-        width_delta = np.random.randint(5, self.width - total_width - 15)
-        imgs = list()
+        total_width = max_width * 5
+        width_delta = np.random.randint(0, self.width - total_width)
+        vertical_range = self.high - max_high
+        images = list()
         for index, letter in enumerate(text):
             tmp_img = img.copy()
-            (width, high), _ = cv2.getTextSize(
-                letter, font_face, font_scale, font_thickness)
-            vertical_range = self.high - high
             delta_high = np.random.randint(
                 int(2*vertical_range/5), int(3*vertical_range/5)
             )
             bottom_left_coordinate = (
-                index*width + width_delta,
+                index*max_width + width_delta,
                 self.high - delta_high
             )
             font_color = tuple(int(np.random.choice(range(0, 156)))
@@ -103,12 +105,12 @@ class Captcha:
             cv2.putText(tmp_img, letter, bottom_left_coordinate, font_face,
                         font_scale, font_color, font_thickness)
             self._tilt_img(tmp_img)
-            imgs.append(tmp_img)
+            images.append(tmp_img)
         high, width, _ = img.shape
         for y in range(width):
             for x in range(high):
                 r, g, b = 0, 0, 0
-                for tmp_img in imgs:
+                for tmp_img in images:
                     r += tmp_img[x, y, 0]
                     g += tmp_img[x, y, 1]
                     b += tmp_img[x, y, 2]
@@ -164,4 +166,4 @@ class Captcha:
 
 if __name__ == '__main__':
     c = Captcha(150, 40, debug=True)
-    c.batch_create_img(5)
+    c.batch_create_img(10)
