@@ -145,8 +145,9 @@ class Captcha:
         self._draw_line(img)
 
         if self.debug:
-            cv2.imshow("img", img)
+            cv2.imshow(text, img)
             cv2.waitKey(0)
+            cv2.destroyAllWindows()
         else:
             cv2.imwrite('{}/{}.jpg'.format(self.folder, text), img)
 
