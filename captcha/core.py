@@ -8,6 +8,7 @@ from captcha import constant
 src, _ = os.path.split(os.path.abspath(__file__))
 wd = os.path.dirname(src)
 
+
 class Captcha:
     def __init__(self, width, high, letter=None,
                  folder=os.path.join(wd, 'samples'), debug=False):
