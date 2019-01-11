@@ -5,10 +5,12 @@ import math
 import os
 from captcha import constant
 
+src, _ = os.path.split(os.path.abspath(__file__))
+wd = os.path.dirname(src)
 
 class Captcha:
     def __init__(self, width, high, letter=None,
-                 folder='../samples', debug=False):
+                 folder=os.path.join(wd, 'samples'), debug=False):
         if letter is None:
             letter = string.ascii_uppercase + string.digits
         stop_letter = {'I', 'O', 'Q'}
@@ -162,7 +164,7 @@ class Captcha:
                     if len(exits) % 10 == 0:
                         print('{} generated.'.format(len(exits)))
         if not self.debug:
-            print('{} saved.'.format(len(exits)))
+            print('{} captchas saved into {}.'.format(len(exits), self.folder))
 
 
 if __name__ == '__main__':
