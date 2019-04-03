@@ -63,8 +63,8 @@ class Captcha:
         tmp_img = img.copy()
         tmp_img.fill(255)
 
-        coef_vertical = np.random.randint(3, 8)
-        coef_horizontal = np.random.choice([4, 5, 6]) * math.pi / width
+        coef_vertical = np.random.randint(1, 5)
+        coef_horizontal = np.random.choice([2, 3, 4]) * math.pi / width
         scale_biase = np.random.randint(0, 360) * math.pi / 180
 
         def new_coordinate(x, y):
@@ -128,7 +128,7 @@ class Captcha:
         start, end = (left_x, left_y), (right_x, right_y)
         line_color = tuple(int(np.random.choice(range(0, 156)))
                            for _ in range(3))
-        line_thickness = np.random.randint(1, 3)
+        line_thickness = np.random.randint(1, 2)
         cv2.line(img, start, end, line_color, line_thickness)
 
     def _put_noise(self, img):
