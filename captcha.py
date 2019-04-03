@@ -3,10 +3,12 @@ import cv2
 import string
 import math
 import os
-from captcha import constant
 
-src, _ = os.path.split(os.path.abspath(__file__))
-wd = os.path.dirname(src)
+FONTS = ['FONT_HERSHEY_COMPLEX',  'FONT_HERSHEY_DUPLEX',
+         'FONT_HERSHEY_SIMPLEX',  'FONT_HERSHEY_TRIPLEX', 'FONT_ITALIC']
+LETTER_NUM = 5
+
+wd, _ = os.path.split(os.path.abspath(__file__))
 
 
 class Captcha:
@@ -81,7 +83,7 @@ class Captcha:
         img[:, :, :] = tmp_img[:, :, :]
 
     def _draw_basic(self, img, text):
-        font_face = getattr(cv2,  np.random.choice(constant.FONTS))
+        font_face = getattr(cv2,  np.random.choice(FONTS))
         font_scale = 1
         font_thickness = 2
         max_width = max_high = 0
@@ -157,7 +159,7 @@ class Captcha:
     def batch_create_img(self, number=5):
         exits = set()
         while(len(exits)) < number:
-            word = ''.join(np.random.choice(self.letter, constant.LETTER_NUM))
+            word = ''.join(np.random.choice(self.letter, LETTER_NUM))
             if word not in exits:
                 exits.add(word)
                 self.save_img(word)
@@ -169,5 +171,5 @@ class Captcha:
 
 
 if __name__ == '__main__':
-    c = Captcha(150, 40, debug=True)
-    c.batch_create_img(10)
+    c = Captcha(150, 40, debug=False)
+    c.batch_create_img(5)
