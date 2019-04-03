@@ -3,6 +3,7 @@ import cv2
 import string
 import math
 import os
+import uuid
 
 FONTS = ['FONT_HERSHEY_COMPLEX',  'FONT_HERSHEY_DUPLEX',
          'FONT_HERSHEY_SIMPLEX',  'FONT_HERSHEY_TRIPLEX', 'FONT_ITALIC']
@@ -160,6 +161,7 @@ class Captcha:
         exits = set()
         while(len(exits)) < number:
             word = ''.join(np.random.choice(self.letter, LETTER_NUM))
+            word += ('_'+str(uuid.uuid1())[4: 8])
             if word not in exits:
                 exits.add(word)
                 self.save_img(word)
