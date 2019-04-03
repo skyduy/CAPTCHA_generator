@@ -11,7 +11,7 @@ Actually this is used to generate training data of project [CNN_keras](https://g
 
 ### example:
 ```python
-from captcha.core import Captcha
+from captcha import Captcha
 
 c = Captcha(150, 40, debug=True)
 c.batch_create_img(10)
