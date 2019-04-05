@@ -13,10 +13,14 @@ Actually this is used to generate training data of project [CNN_keras](https://g
 ```python
 from captcha import Captcha
 
-c = Captcha(150, 40, debug=True)
-c.batch_create_img(10)
+letter_set = '0123456789'
+letters_per_img = 5
+min_width, min_height = 128, 36
+c = Captcha(min_width, min_height, letter_set, letters_per_img, debug=True)
+print(c.letter)  # actually used letter
+c.batch_create_img(5)
 ```
 
 #### TODO
- - improve performance.
- - support multi parameters.
+ - Add more customizable params.
+ - Improve performance.

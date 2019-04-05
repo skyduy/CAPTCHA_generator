@@ -9,7 +9,7 @@ wd, _ = os.path.split(os.path.abspath(__file__))
 
 
 class Captcha:
-    def __init__(self, width, high, ls=None, fs=None, lc=4,
+    def __init__(self, width, high, ls=None, lc=4, fs=None,
                  folder=os.path.join(wd, 'samples'), debug=False):
         """
         :param ls: letter set, all
