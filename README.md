@@ -2,9 +2,9 @@
 
 The CAPTCHA created like this:
 
-![1](https://github.com/skyduy/CAPTCHA_generator/raw/master/samples/3VDL1_f23e.jpg)
-![2](https://github.com/skyduy/CAPTCHA_generator/raw/master/samples/12JBJ_17c6.jpg)
-![3](https://github.com/skyduy/CAPTCHA_generator/raw/master/samples/CUY25_5d54.jpg)
+![1](https://github.com/skyduy/CAPTCHA_generator/raw/master/samples/BJNF_ccac.jpg)
+![2](https://github.com/skyduy/CAPTCHA_generator/raw/master/samples/EGVL_2a78.jpg)
+![3](https://github.com/skyduy/CAPTCHA_generator/raw/master/samples/EGVL_2a78.jpg)
 
 
 Actually this is used to generate training data of project [CNN_keras](https://github.com/skyduy/CNN_keras)

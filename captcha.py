@@ -5,20 +5,27 @@ import math
 import os
 import uuid
 
-FONTS = ['FONT_HERSHEY_COMPLEX',  'FONT_HERSHEY_DUPLEX',
-         'FONT_HERSHEY_SIMPLEX',  'FONT_HERSHEY_TRIPLEX', 'FONT_ITALIC']
-LETTER_NUM = 5
-
 wd, _ = os.path.split(os.path.abspath(__file__))
 
 
 class Captcha:
-    def __init__(self, width, high, letter=None,
+    def __init__(self, width, high, ls=None, fs=None, lc=4,
                  folder=os.path.join(wd, 'samples'), debug=False):
-        if letter is None:
-            letter = string.ascii_uppercase + string.digits
+        """
+        :param ls: letter set, all
+        :param fs: font set
+        :param lc: letter count in one pic
+        :param folder: the folder to save img
+        :param debug: debug mode
+        """
+        if fs is None:
+            self.fs = ['FONT_HERSHEY_COMPLEX', 'FONT_HERSHEY_SIMPLEX',
+                       'FONT_ITALIC']
+        if ls is None:
+            self.ls = string.ascii_uppercase + string.digits
+        self.lc = lc
         stop_letter = {'I', 'O', 'Q'}
-        self.letter = [i for i in letter if i not in stop_letter]
+        self.letter = [i for i in ls if i not in stop_letter]
         self.width, self.high = width, high
         self.debug = debug
         self.folder = folder
@@ -84,7 +91,7 @@ class Captcha:
         img[:, :, :] = tmp_img[:, :, :]
 
     def _draw_basic(self, img, text):
-        font_face = getattr(cv2,  np.random.choice(FONTS))
+        font_face = getattr(cv2, np.random.choice(self.fs))
         font_scale = 1
         font_thickness = 2
         max_width = max_high = 0
@@ -93,7 +100,7 @@ class Captcha:
                 i, font_face, font_scale, font_thickness)
             max_width, max_high = max(max_width, width), max(max_high, high)
 
-        total_width = max_width * 5
+        total_width = max_width * self.lc
         width_delta = np.random.randint(0, self.width - total_width)
         vertical_range = self.high - max_high
         images = list()
@@ -131,7 +138,7 @@ class Captcha:
         start, end = (left_x, left_y), (right_x, right_y)
         line_color = tuple(int(np.random.choice(range(0, 156)))
                            for _ in range(3))
-        line_thickness = np.random.randint(1, 2)
+        line_thickness = np.random.randint(1, 3)
         cv2.line(img, start, end, line_color, line_thickness)
 
     def _put_noise(self, img):
@@ -155,13 +162,13 @@ class Captcha:
             cv2.waitKey(0)
             cv2.destroyAllWindows()
         else:
-            cv2.imwrite('{}/{}.jpg'.format(self.folder, text), img)
+            fn = text + ('_'+str(uuid.uuid1())[4: 8])
+            cv2.imwrite('{}/{}.jpg'.format(self.folder, fn), img)
 
     def batch_create_img(self, number=5):
         exits = set()
         while(len(exits)) < number:
-            word = ''.join(np.random.choice(self.letter, LETTER_NUM))
-            word += ('_'+str(uuid.uuid1())[4: 8])
+            word = ''.join(np.random.choice(self.letter, self.lc))
             if word not in exits:
                 exits.add(word)
                 self.save_img(word)
@@ -173,5 +180,7 @@ class Captcha:
 
 
 if __name__ == '__main__':
-    c = Captcha(150, 40, debug=False)
-    c.batch_create_img(5)
+    letters = string.ascii_uppercase
+    c = Captcha(120, 36, letters, debug=False)
+    print(c.letter)
+    c.batch_create_img(3)
