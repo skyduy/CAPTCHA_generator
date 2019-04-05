@@ -19,13 +19,18 @@ class Captcha:
         :param debug: debug mode
         """
         if fs is None:
-            self.fs = ['FONT_HERSHEY_COMPLEX', 'FONT_HERSHEY_SIMPLEX',
-                       'FONT_ITALIC']
+            fs = ['FONT_HERSHEY_COMPLEX', 'FONT_HERSHEY_SIMPLEX',
+                  'FONT_ITALIC']
+        self.fs = fs
+
         if ls is None:
-            self.ls = string.ascii_uppercase + string.digits
+            ls = string.ascii_uppercase + string.digits
+        if isinstance(ls, str):
+            self.letter = [i for i in ls]
+        elif isinstance(ls, list):
+            self.letter = ls
+
         self.lc = lc
-        stop_letter = {'I', 'O', 'Q'}
-        self.letter = [i for i in ls if i not in stop_letter]
         self.width, self.high = width, high
         self.debug = debug
         self.folder = folder
@@ -180,7 +185,7 @@ class Captcha:
 
 
 if __name__ == '__main__':
-    letters = string.ascii_uppercase
-    c = Captcha(120, 36, letters, debug=False)
-    print(c.letter)
+    letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'K', 'M',
+               'N', 'P', 'R', 'T', 'U', 'V', 'W', 'X', 'Y']
+    c = Captcha(120, 36, letters, fs=['FONT_ITALIC'], debug=True)
     c.batch_create_img(3)
